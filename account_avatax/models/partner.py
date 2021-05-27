@@ -36,7 +36,14 @@ class ResPartner(models.Model):
         help="Indicates if the address is already validated on save"
         " before calling the wizard",
     )
+    use_parent_company_code = fields.Boolean(
+        string="Use Parent Company Code",
+        help="If Boolean is checked, Parent Company Customer Code "
+        "will be used, helpful for individuals that order on behalf of company.",
+    )
+
     customer_code = fields.Char("Customer Code", copy=False)
+
     tax_exempt = fields.Boolean(
         "Is Tax Exempt (Deprecated))",
         deprecated=True,

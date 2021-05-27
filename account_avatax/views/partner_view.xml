@@ -37,12 +37,15 @@
                             />
                             <newline />
                             <separator string="Customer Code" />
-                            <field name="customer_code" readonly="1" />
+                            <field name="use_parent_company_code"
+                                attrs="{'invisible': [('parent_id','=', False)]}" />
+                            <field name="customer_code" readonly="1" 
+                                attrs="{'invisible': [('use_parent_company_code','=', True)]}" />
                             <button
                                 name="generate_cust_code"
                                 string="Generate"
                                 type="object"
-                                attrs="{'invisible': [('customer_code','!=',False)]}"
+                                attrs="{'invisible': ['|',('use_parent_company_code','=', True),('customer_code','!=',False)]}"
                             />
                         </group>
                     </group>

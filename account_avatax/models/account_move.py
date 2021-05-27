@@ -179,6 +179,17 @@ class AccountMove(models.Model):
         ]
         return [x for x in lines if x]
 
+    def _get_avatax_partner(self,  use_so_partner):           
+        if self.so_partner_id and use_so_partner:
+            partner = self.so_partner_id
+        else:
+            partner = self.partner_id
+        
+        if partner.use_parent_company_code and partner.parent_id and partner.parent_id.company_type == "company":
+            partner = partner.parent_id
+
+        return partner
+
     # Same as v12
     def _avatax_compute_tax(self, commit=False):
         """ Contact REST API and recompute taxes for a Sale Order """
@@ -194,9 +205,7 @@ class AccountMove(models.Model):
             self.invoice_date or fields.Date.today(),
             self.name,
             doc_type,
-            self.so_partner_id
-            if self.so_partner_id and avatax_config.use_so_partner_id
-            else self.partner_id,
+            self._get_avatax_partner(avatax_config.use_so_partner_id),
             self.warehouse_id.partner_id or self.company_id.partner_id,
             self.tax_address_id or self.partner_id,
             taxable_lines,
