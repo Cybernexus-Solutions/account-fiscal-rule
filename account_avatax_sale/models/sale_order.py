@@ -139,6 +139,14 @@ class SaleOrder(models.Model):
         ]
         return [x for x in lines if x]
 
+    def _get_avatax_partner(self,  use_so_partner):  
+        partner = self.partner_id
+        if use_so_partner:
+            partner = self.partner_invoice_id
+        if partner.use_parent_company_code and partner.parent_id and partner.parent_id.company_type == "company":
+            partner = partner.parent_id
+        return partner
+
     def _avatax_compute_tax(self):
         """ Contact REST API and recompute taxes for a Sale Order """
         self and self.ensure_one()
@@ -147,15 +155,12 @@ class SaleOrder(models.Model):
         avatax_config = self.company_id.get_avatax_config_company()
         if not avatax_config:
             return False
-        partner = self.partner_id
-        if avatax_config.use_partner_invoice_id:
-            partner = self.partner_invoice_id
         taxable_lines = self._avatax_prepare_lines(self.order_line)
         tax_result = avatax_config.create_transaction(
             self.date_order,
             self.name,
             doc_type,
-            partner,
+            self._get_avatax_partner(avatax_config.use_so_partner_id),
             self.warehouse_id.partner_id or self.company_id.partner_id,
             self.tax_address_id or self.partner_id,
             taxable_lines,
