@@ -143,8 +143,8 @@ class SaleOrder(models.Model):
         partner = self.partner_id
         if use_so_partner:
             partner = self.partner_invoice_id
-        if partner.use_parent_company_code and partner.parent_id and partner.parent_id.company_type == "company":
-            partner = partner.parent_id
+        if partner.use_parent_company_code:
+            partner = partner.commercial_partner_id
         return partner
 
     def _avatax_compute_tax(self):
