@@ -45,9 +45,9 @@ class AccountTax(models.Model):
             # check the data for your existing Avatax taxes.
             vals = {
                 "amount": tax_rate,
-                "name": self._get_avalara_tax_name(tax_rate, doc_type),
             }
             tax = tax_template.sudo().copy(default=vals)
+            tax.name = self._get_avalara_tax_name(tax_rate, doc_type)
         return tax
 
     def compute_all(
